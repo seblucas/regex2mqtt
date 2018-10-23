@@ -107,9 +107,14 @@ services:
     image: regex2mqtt-python3-cron:latest
     restart: always
     environment:
-      CRON_STRINGS: "09 * * * * wget -qO- https://api.mysite.com | regex2mqtt.py -m localhost -r '<My regex>' -v"
+      REGEX_STRING: >-
+        ^(?P<day>\d{2})/(?P<month>\d{2})/(?P<year>\d{4})#(?P<hour>\d{2})h(?P<minute>\d{2})#(?P<temperature>.*?)#(?P<humidity>.*?)#.*?#.*?#.*?#(?P<airpressure>.*?)#
+      CRON_STRINGS: >-
+        09 * * * * wget -qO- https://api.mysite.com | regex2mqtt.py -m localhost -r "$$REGEX_STRING" -v
       CRON_LOG_LEVEL: 8
 ```
+
+As you can see, I prefer to store my regular expression in a separate environment variable to avoid any string interpolation / mismatch afterward.
 
 # Limits
 
